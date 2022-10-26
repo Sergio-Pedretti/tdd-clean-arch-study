@@ -6,5 +6,11 @@ export namespace LoadFacebookUserApi {
   export type Params = {
     token: string
   }
-  export type Result = undefined
+
+  type facebookLogIn = {
+    facebookId: string
+    name: string
+    email: string
+  }
+  export type Result = facebookLogIn | undefined
 }
