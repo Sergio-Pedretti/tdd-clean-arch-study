@@ -1,7 +1,7 @@
 import { AuthenticationError } from '@/domain/erros'
 import { FacebookAuthentication } from '@/domain/features'
 import { FacebookLoginController } from '@/application/controllers'
-import { ServerError } from '@/application/controllers/erros'
+import { ServerError } from '@/application/erros'
 import { AccessToken } from '@/domain/models'
 import { mock, MockProxy } from 'jest-mock-extended'
 
