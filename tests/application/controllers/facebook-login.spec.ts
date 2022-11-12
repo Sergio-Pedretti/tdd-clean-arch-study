@@ -67,7 +67,7 @@ describe('FacebookLoginController', () => {
     expect(httpResponse).toEqual({
       statusCode: 200,
       data: {
-        access_token: 'any-value'
+        accessToken: 'any-value'
       }
     })
   })
