@@ -1,27 +1,29 @@
 import { Controller } from '@/application/controllers'
-import { Response, Request } from 'express'
+import { Response, Request, RequestHandler, NextFunction } from 'express'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { getMockReq, getMockRes } from '@jest-mock/express'
-import { ExpressRouter } from '@/infra/http/express-router'
+import { adaptExpressRoute } from '@/infra/http/express-router'
 
 describe('ExpressRouter', () => {
   let req: Request
   let res: Response
   let controller: MockProxy<Controller>
-  let sut: ExpressRouter
+  let next: NextFunction
+  let sut: RequestHandler
   beforeEach(() => {
     req = getMockReq({ body: { any: 'any' } })
     res = getMockRes().res
+    next = getMockRes().next
     controller = mock()
     controller.handle.mockResolvedValue({
       statusCode: 200,
       data: { data: 'any-data' }
     })
-    sut = new ExpressRouter(controller)
+    sut = adaptExpressRoute(controller)
   })
 
   it('should call handle with the correct params', async () => {
-    await sut.adapt(req, res)
+    await sut(req, res, next)
 
     expect(controller.handle).toHaveBeenCalledWith({ any: 'any' })
     expect(controller.handle).toHaveBeenCalledTimes(1)
@@ -29,14 +31,14 @@ describe('ExpressRouter', () => {
 
   it('should call handle with undefined if body empty', async () => {
     const req = getMockReq()
-    await sut.adapt(req, res)
+    await sut(req, res, next)
 
     expect(controller.handle).toHaveBeenCalledWith({})
     expect(controller.handle).toHaveBeenCalledTimes(1)
   })
 
   it('should respond with 200 and valid data', async () => {
-    await sut.adapt(req, res)
+    await sut(req, res, next)
 
     expect(res.status).toHaveBeenCalledWith(200)
     expect(res.status).toHaveBeenCalledTimes(1)
@@ -50,7 +52,7 @@ describe('ExpressRouter', () => {
       data: new Error('any-error')
     })
 
-    await sut.adapt(req, res)
+    await sut(req, res, next)
 
     expect(res.status).toHaveBeenCalledWith(400)
     expect(res.status).toHaveBeenCalledTimes(1)
@@ -64,7 +66,7 @@ describe('ExpressRouter', () => {
       data: new Error('any-error')
     })
 
-    await sut.adapt(req, res)
+    await sut(req, res, next)
 
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.status).toHaveBeenCalledTimes(1)
