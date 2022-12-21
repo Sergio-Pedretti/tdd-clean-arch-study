@@ -5,7 +5,7 @@ import { AuthenticationError } from '@/domain/entities/erros'
 import { FacebookAuthentication } from '@/domain/features'
 import { AccessToken, FacebookAccount } from '@/domain/entities'
 
-export class FacebookAuthenticationService {
+export class FacebookAuthenticationUseCase {
   constructor (
     private readonly facebookApi: LoadFacebookUserApi,
     private readonly userAccountRepo: LoadUserAccountRepository & SaveFacebookAccountRepository,
