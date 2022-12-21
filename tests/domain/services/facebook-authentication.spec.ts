@@ -7,9 +7,9 @@ import { FacebookAuthenticationService } from '@/domain/services/facebook-authen
 import { mocked } from 'ts-jest/utils'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { AccessToken, FacebookAccount } from '@/domain/models/'
+import { AccessToken, FacebookAccount } from '@/domain/entities'
 
-jest.mock('@/domain/models/facebook-account')
+jest.mock('@/domain/entities/facebook-account')
 
 describe('FacebookAuthenticationService', () => {
   let facebookApi: MockProxy<LoadFacebookUserApi>
