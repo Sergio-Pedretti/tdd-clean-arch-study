@@ -1,21 +1,23 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 
 export interface TokenValidator {
-  validateToken: (params: TokenValidator.Params) => Promise<Authorize>
+  validateToken: (params: TokenValidator.Params) => Promise<TokenValidator.Result>
 }
 
 export namespace TokenValidator {
   export type Params = {
     token: string
   }
+  export type Result = string
 }
 
 type Setup = (crypto: TokenValidator) => Authorize
 type Input = { token: string }
-type Authorize = (params: Input) => Promise<void>
+type Output = string
+type Authorize = (params: Input) => Promise<Output>
 
 const setupAuthorize: Setup = crypto => async params => {
-  await crypto.validateToken(params)
+  return await crypto.validateToken(params)
 }
 
 describe('TokenValidator', () => {
@@ -30,6 +32,7 @@ describe('TokenValidator', () => {
 
   beforeEach(() => {
     sut = setupAuthorize(crypto)
+    crypto.validateToken.mockResolvedValue('any-value')
   })
 
   it('should call TokenValidator with correct params', async () => {
@@ -37,5 +40,11 @@ describe('TokenValidator', () => {
 
     expect(crypto.validateToken).toHaveBeenCalledWith({ token })
     expect(crypto.validateToken).toHaveBeenCalledTimes(1)
+  })
+
+  it('should return correct AccessToken', async () => {
+    const userId = await sut({ token })
+
+    expect(userId).toBe('any-value')
   })
 })
