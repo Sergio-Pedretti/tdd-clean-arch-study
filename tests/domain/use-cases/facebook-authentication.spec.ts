@@ -2,7 +2,7 @@ import { AuthenticationError } from '@/domain/entities/erros'
 import { LoadFacebookUserApi } from '@/domain/contracts/apis'
 import { TokenGenerator } from '@/domain/contracts/crypto'
 import { LoadUserAccountRepository, SaveFacebookAccountRepository } from '@/domain/contracts/repos'
-import { setupFacebookAuthentication, FacebookAuthentication } from '@/domain/use-cases/facebook-authentication'
+import { setupFacebookAuthentication, FacebookAuthentication } from '@/domain/use-cases'
 
 import { mocked } from 'ts-jest/utils'
 
