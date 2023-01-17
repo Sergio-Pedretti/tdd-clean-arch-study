@@ -4,7 +4,7 @@ export interface UploadFile {
 
 namespace UploadFile {
   export type Input = {
-    file: Buffer
+    file?: Buffer
     key: string
   }
 }
