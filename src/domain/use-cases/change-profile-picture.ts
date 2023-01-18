@@ -11,10 +11,15 @@ type Setup = (fileStorage: UploadFile, crypto: UUIDGenerator, userProfile: SaveU
 
 export const setupChangeProfilePicture: Setup = (fileStorage, crypto, userProfile) => async ({ id, file }) => {
   let pictureUrl: string | undefined
+  let initials: string | undefined
   if (file !== undefined) {
     pictureUrl = await fileStorage.upload({ file, key: crypto.uuid({ key: id }) })
   } else {
-    await userProfile.load({ id })
+    const { name } = await userProfile.load({ id })
+    if (name !== undefined) {
+      const firstLetters = name.match(/\b(.)/g) ?? []
+      initials = `${firstLetters.shift()?.toUpperCase() ?? ''}${firstLetters.pop()?.toUpperCase() ?? ''}`
+    }
   }
-  await userProfile.savePicture({ pictureUrl })
+  await userProfile.savePicture({ pictureUrl, initials })
 }

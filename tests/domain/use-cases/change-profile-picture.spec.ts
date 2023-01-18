@@ -18,6 +18,7 @@ describe('ChangeProfilePicture', () => {
     fileStorage = mock()
     fileStorage.upload.mockResolvedValue('any-url')
     userProfile = mock()
+    userProfile.load.mockResolvedValue({ name: 'Sergio Italo Miranda Pedretti' })
     crypto = mock()
     crypto.uuid.mockReturnValue(uuid)
   })
@@ -48,7 +49,16 @@ describe('ChangeProfilePicture', () => {
   it('should call SaveUserPicture with correct input when file is undefined', async () => {
     await sut({ id: 'any-id', file: undefined })
 
-    expect(userProfile.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined })
+    expect(userProfile.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'SP' })
+    expect(userProfile.savePicture).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call SaveUserPicture with correct initials if name different case', async () => {
+    userProfile.load.mockResolvedValueOnce({ name: 'sergio italo miranda pedretti' })
+
+    await sut({ id: 'any-id', file: undefined })
+
+    expect(userProfile.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'SP' })
     expect(userProfile.savePicture).toHaveBeenCalledTimes(1)
   })
 
