@@ -62,6 +62,24 @@ describe('ChangeProfilePicture', () => {
     expect(userProfile.savePicture).toHaveBeenCalledTimes(1)
   })
 
+  it('should call SaveUserPicture with correct initials if has only first name', async () => {
+    userProfile.load.mockResolvedValueOnce({ name: 'Sergio' })
+
+    await sut({ id: 'any-id', file: undefined })
+
+    expect(userProfile.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'SE' })
+    expect(userProfile.savePicture).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call SaveUserPicture with correct initials if has only one letter', async () => {
+    userProfile.load.mockResolvedValueOnce({ name: 's' })
+
+    await sut({ id: 'any-id', file: undefined })
+
+    expect(userProfile.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'S' })
+    expect(userProfile.savePicture).toHaveBeenCalledTimes(1)
+  })
+
   it('should call LoadUserPicture with correct input', async () => {
     await sut({ id: 'any-id', file: undefined })
 
