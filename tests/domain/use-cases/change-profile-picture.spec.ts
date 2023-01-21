@@ -62,4 +62,20 @@ describe('ChangeProfilePicture', () => {
 
     expect(userProfile.load).not.toHaveBeenCalled()
   })
+
+  it('should return data on Success', async () => {
+    mocked(UserProfile).mockImplementationOnce(id => ({
+      setPicture: jest.fn(),
+      id: 'any-id',
+      initials: 'any-initial',
+      pictureUrl: 'any-url'
+    }))
+
+    const result = await sut({ id: 'any-id', file })
+
+    expect(result).toEqual({
+      initials: 'any-initial',
+      pictureUrl: 'any-url'
+    })
+  })
 })
