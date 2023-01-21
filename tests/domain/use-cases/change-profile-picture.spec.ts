@@ -3,6 +3,10 @@ import { setupChangeProfilePicture, ChangeProfilePicture } from '@/domain/use-ca
 import { UUIDGenerator } from '@/domain/contracts/crypto'
 import { UploadFile } from '@/domain/contracts/upload'
 import { SaveUserPicture, LoadUserPicture } from '@/domain/contracts/repos'
+import { UserProfile } from '@/domain/entities'
+import { mocked } from 'ts-jest/utils'
+
+jest.mock('@/domain/entities/user-profile')
 
 describe('ChangeProfilePicture', () => {
   let uuid: string
@@ -42,50 +46,7 @@ describe('ChangeProfilePicture', () => {
   it('should call SaveUserPicture with correct input', async () => {
     await sut({ id: 'any-id', file })
 
-    expect(userProfile.savePicture).toHaveBeenCalledWith({ pictureUrl: 'any-url', initials: undefined })
-    expect(userProfile.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  it('should call SaveUserPicture with correct input when file is undefined', async () => {
-    await sut({ id: 'any-id', file: undefined })
-
-    expect(userProfile.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'SP' })
-    expect(userProfile.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  it('should call SaveUserPicture with correct initials if name different case', async () => {
-    userProfile.load.mockResolvedValueOnce({ name: 'sergio italo miranda pedretti' })
-
-    await sut({ id: 'any-id', file: undefined })
-
-    expect(userProfile.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'SP' })
-    expect(userProfile.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  it('should call SaveUserPicture with correct initials if has only first name', async () => {
-    userProfile.load.mockResolvedValueOnce({ name: 'Sergio' })
-
-    await sut({ id: 'any-id', file: undefined })
-
-    expect(userProfile.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'SE' })
-    expect(userProfile.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  it('should call SaveUserPicture with correct initials if has only one letter', async () => {
-    userProfile.load.mockResolvedValueOnce({ name: 's' })
-
-    await sut({ id: 'any-id', file: undefined })
-
-    expect(userProfile.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'S' })
-    expect(userProfile.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  it('should call SaveUserPicture with correct input if initials is undefined', async () => {
-    userProfile.load.mockResolvedValueOnce({ name: undefined })
-
-    await sut({ id: 'any-id', file: undefined })
-
-    expect(userProfile.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: undefined })
+    expect(userProfile.savePicture).toHaveBeenCalledWith(...mocked(UserProfile).mock.instances)
     expect(userProfile.savePicture).toHaveBeenCalledTimes(1)
   })
 

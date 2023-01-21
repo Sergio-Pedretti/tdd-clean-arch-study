@@ -1,6 +1,7 @@
 import { UUIDGenerator } from '@/domain/contracts/crypto'
 import { UploadFile } from '@/domain/contracts/upload'
 import { LoadUserPicture, SaveUserPicture } from '@/domain/contracts/repos'
+import { UserProfile } from '@/domain/entities'
 
 type Input = {
   id: string
@@ -9,21 +10,14 @@ type Input = {
 export type ChangeProfilePicture = (input: Input) => Promise<void>
 type Setup = (fileStorage: UploadFile, crypto: UUIDGenerator, userProfile: SaveUserPicture & LoadUserPicture) => ChangeProfilePicture
 
-export const setupChangeProfilePicture: Setup = (fileStorage, crypto, userProfile) => async ({ id, file }) => {
-  let pictureUrl: string | undefined
-  let initials: string | undefined
+export const setupChangeProfilePicture: Setup = (fileStorage, crypto, userProfileRepo) => async ({ id, file }) => {
+  const data: { pictureUrl?: string, name?: string } = {}
   if (file !== undefined) {
-    pictureUrl = await fileStorage.upload({ file, key: crypto.uuid({ key: id }) })
+    data.pictureUrl = await fileStorage.upload({ file, key: crypto.uuid({ key: id }) })
   } else {
-    const { name } = await userProfile.load({ id })
-    if (name !== undefined) {
-      const firstLetters = name.match(/\b(.)/g) ?? []
-      if (firstLetters.length > 1) {
-        initials = `${firstLetters.shift()?.toUpperCase() ?? ''}${firstLetters.pop()?.toUpperCase() ?? ''}`
-      } else {
-        initials = name.substring(0, 2).toUpperCase()
-      }
-    }
+    data.name = (await userProfileRepo.load({ id })).name
   }
-  await userProfile.savePicture({ pictureUrl, initials })
+  const userProfile = new UserProfile(id)
+  userProfile.setPicture(data)
+  await userProfileRepo.savePicture(userProfile)
 }
