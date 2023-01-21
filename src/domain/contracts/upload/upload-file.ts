@@ -9,3 +9,13 @@ namespace UploadFile {
   }
   export type Output = string
 }
+
+export interface DeleteFile {
+  delete: (input: DeleteFile.Input) => Promise<void>
+}
+
+namespace DeleteFile {
+  export type Input = {
+    key: string
+  }
+}
