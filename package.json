@@ -30,6 +30,7 @@
     "@types/module-alias": "^2.0.1",
     "@types/node": "^18.11.0",
     "@types/supertest": "^2.0.12",
+    "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "eslint": "^8.25.0",
     "eslint-config-standard-with-typescript": "^23.0.0",
@@ -56,6 +57,7 @@
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "typeorm": "0.2.29"
+    "typeorm": "0.2.29",
+    "uuid": "^9.0.0"
   }
 }

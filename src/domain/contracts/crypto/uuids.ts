@@ -2,7 +2,7 @@ export interface UUIDGenerator {
   uuid: (input: UUIDGenerator.Input) => UUIDGenerator.Output
 }
 
-namespace UUIDGenerator {
+export namespace UUIDGenerator {
   export type Input = {
     key: string
   }
