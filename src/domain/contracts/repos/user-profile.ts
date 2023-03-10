@@ -6,11 +6,11 @@ export namespace SaveUserPicture {
   export type Input = { id: string, pictureUrl?: string, initials?: string }
 }
 
-export interface LoadUserPicture {
-  load: (input: LoadUserPicture.Input) => Promise<LoadUserPicture.Output>
+export interface LoadUserProfile {
+  load: (input: LoadUserProfile.Input) => Promise<LoadUserProfile.Output>
 }
 
-namespace LoadUserPicture {
+export namespace LoadUserProfile {
   export type Input = { id: string }
   export type Output = { name?: string } | undefined
 }

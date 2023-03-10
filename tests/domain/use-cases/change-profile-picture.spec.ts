@@ -2,7 +2,7 @@ import { mock, MockProxy } from 'jest-mock-extended'
 import { setupChangeProfilePicture, ChangeProfilePicture } from '@/domain/use-cases'
 import { UUIDGenerator } from '@/domain/contracts/crypto'
 import { UploadFile, DeleteFile } from '@/domain/contracts/upload'
-import { SaveUserPicture, LoadUserPicture } from '@/domain/contracts/repos'
+import { SaveUserPicture, LoadUserProfile } from '@/domain/contracts/repos'
 import { UserProfile } from '@/domain/entities'
 import { mocked } from 'ts-jest/utils'
 
@@ -12,7 +12,7 @@ describe('ChangeProfilePicture', () => {
   let uuid: string
   let file: Buffer
   let fileStorage: MockProxy<UploadFile & DeleteFile>
-  let userProfile: MockProxy<SaveUserPicture & LoadUserPicture>
+  let userProfile: MockProxy<SaveUserPicture & LoadUserProfile>
   let crypto: MockProxy<UUIDGenerator>
   let sut: ChangeProfilePicture
 
@@ -59,14 +59,14 @@ describe('ChangeProfilePicture', () => {
     expect(userProfile.savePicture).toHaveBeenCalledTimes(1)
   })
 
-  it('should call LoadUserPicture with correct input', async () => {
+  it('should call LoadUserProfile with correct input', async () => {
     await sut({ id: 'any-id', file: undefined })
 
     expect(userProfile.load).toHaveBeenCalledWith({ id: 'any-id' })
     expect(userProfile.load).toHaveBeenCalledTimes(1)
   })
 
-  it('should not call LoadUserPicture if file exists', async () => {
+  it('should not call LoadUserProfile if file exists', async () => {
     await sut({ id: 'any-id', file })
 
     expect(userProfile.load).not.toHaveBeenCalled()

@@ -1,6 +1,6 @@
 import { UUIDGenerator } from '@/domain/contracts/crypto'
 import { UploadFile, DeleteFile } from '@/domain/contracts/upload'
-import { LoadUserPicture, SaveUserPicture } from '@/domain/contracts/repos'
+import { LoadUserProfile, SaveUserPicture } from '@/domain/contracts/repos'
 import { UserProfile } from '@/domain/entities'
 
 type Input = {
@@ -12,7 +12,7 @@ type Output = {
   initials?: string
 }
 export type ChangeProfilePicture = (input: Input) => Promise<Output>
-type Setup = (fileStorage: UploadFile & DeleteFile, crypto: UUIDGenerator, userProfile: SaveUserPicture & LoadUserPicture) => ChangeProfilePicture
+type Setup = (fileStorage: UploadFile & DeleteFile, crypto: UUIDGenerator, userProfile: SaveUserPicture & LoadUserProfile) => ChangeProfilePicture
 
 export const setupChangeProfilePicture: Setup = (fileStorage, crypto, userProfileRepo) => async ({ id, file }) => {
   const data: { pictureUrl?: string, name?: string } = {}
