@@ -14,7 +14,7 @@ export interface DeleteFile {
   delete: (input: DeleteFile.Input) => Promise<void>
 }
 
-namespace DeleteFile {
+export namespace DeleteFile {
   export type Input = {
     key: string
   }
