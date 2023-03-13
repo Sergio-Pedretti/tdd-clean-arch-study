@@ -1,5 +1,5 @@
 import { RequiredField } from '@/application/erros'
-import { Required, RequiredStringValidator } from '@/application/validation'
+import { Required, RequiredStringValidator, RequiredBuffer } from '@/application/validation'
 
 describe('Required', () => {
   it('should return error if value is null', () => {
@@ -40,6 +40,28 @@ describe('RequiredStringValidator', () => {
   })
   it('should return undefined if value is defined', () => {
     const sut = new RequiredStringValidator('any-value', 'any-field')
+
+    const error = sut.validate()
+
+    expect(error).toBeUndefined()
+  })
+})
+
+describe('RequiredBuffer', () => {
+  it('should extend Required', () => {
+    const sut = new RequiredBuffer(Buffer.from(''))
+
+    expect(sut).toBeInstanceOf(Required)
+  })
+  it('should return error if value is empty', () => {
+    const sut = new RequiredBuffer(Buffer.from(''))
+
+    const error = sut.validate()
+
+    expect(error).toEqual(new RequiredField())
+  })
+  it('should return undefined if value is defined', () => {
+    const sut = new RequiredBuffer(Buffer.from('any-buffer'))
 
     const error = sut.validate()
 
