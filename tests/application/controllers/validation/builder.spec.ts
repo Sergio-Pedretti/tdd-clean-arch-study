@@ -1,4 +1,4 @@
-import { Required, RequiredBuffer, RequiredStringValidator, ValidationBuilder } from '@/application/validation'
+import { AllowedMimeTypes, MaxFileSize, Required, RequiredBuffer, RequiredStringValidator, ValidationBuilder } from '@/application/validation'
 
 describe('ValidationBuilder', () => {
   it('should return a RequiredStringValidator', () => {
@@ -35,7 +35,7 @@ describe('ValidationBuilder', () => {
     expect(validators).toEqual([new Required({ any: 'any' })])
   })
 
-  it('should return Required', () => {
+  it('should return Required and RequiredBuffer', () => {
     const buffer = Buffer.from('any-buffer')
     const validators = ValidationBuilder
       .of({
@@ -45,5 +45,32 @@ describe('ValidationBuilder', () => {
       .build()
 
     expect(validators).toEqual([new Required({ buffer }), new RequiredBuffer(buffer)])
+  })
+
+  it('should return Image validators', () => {
+    const buffer = Buffer.from('any-buffer')
+    const validators = ValidationBuilder
+      .of({
+        value: { buffer }
+      })
+      .image({ allowed: ['png'], maxSizeInMB: 6 })
+      .build()
+
+    expect(validators).toEqual([
+      new MaxFileSize(6, buffer)
+    ])
+  })
+
+  it('should return Image validators', () => {
+    const validators = ValidationBuilder
+      .of({
+        value: { mimeType: 'image/png' }
+      })
+      .image({ allowed: ['png'], maxSizeInMB: 6 })
+      .build()
+
+    expect(validators).toEqual([
+      new AllowedMimeTypes(['png'], 'image/png')
+    ])
   })
 })

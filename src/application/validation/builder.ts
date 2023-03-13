@@ -1,4 +1,4 @@
-import { Required, RequiredBuffer, RequiredStringValidator, Validator } from '@/application/validation'
+import { AllowedMimeTypes, Extension, MaxFileSize, Required, RequiredBuffer, RequiredStringValidator, Validator } from '@/application/validation'
 
 export class ValidationBuilder {
   private constructor (
@@ -21,6 +21,16 @@ export class ValidationBuilder {
       if (this.value.buffer !== undefined) {
         this.validators.push(new RequiredBuffer(this.value.buffer, this.fieldName))
       }
+    }
+    return this
+  }
+
+  image ({ allowed, maxSizeInMB }: { allowed: Extension[], maxSizeInMB: number }): ValidationBuilder {
+    if (this.value.mimeType !== undefined) {
+      this.validators.push(new AllowedMimeTypes(allowed, this.value.mimeType))
+    }
+    if (this.value.buffer !== undefined) {
+      this.validators.push(new MaxFileSize(maxSizeInMB, this.value.buffer))
     }
     return this
   }
