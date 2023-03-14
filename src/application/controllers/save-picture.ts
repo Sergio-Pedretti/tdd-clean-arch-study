@@ -12,9 +12,9 @@ export class SavePictureController extends Controller {
   }
 
   override async perform ({ file, userId }: HttpRequest): Promise<HttpResponse<Model>> {
-    const data = await this.changeProfilePicture({ id: userId, file })
+    const { initials, pictureUrl } = await this.changeProfilePicture({ id: userId, file })
 
-    return ok(data)
+    return ok({ initials, pictureUrl })
   }
 
   override buildValidators ({ file }: HttpRequest): Validator[] {
