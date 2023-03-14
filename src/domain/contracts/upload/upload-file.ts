@@ -5,7 +5,7 @@ export interface UploadFile {
 export namespace UploadFile {
   export type Input = {
     file?: Buffer
-    key: string
+    fileName: string
   }
   export type Output = string
 }
@@ -16,6 +16,6 @@ export interface DeleteFile {
 
 export namespace DeleteFile {
   export type Input = {
-    key: string
+    fileName: string
   }
 }

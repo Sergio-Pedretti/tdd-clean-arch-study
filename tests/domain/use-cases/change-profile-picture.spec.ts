@@ -37,7 +37,7 @@ describe('ChangeProfilePicture', () => {
   it('should call UploadFile with correct input', async () => {
     await sut({ id: 'any-id', file })
 
-    expect(fileStorage.upload).toHaveBeenCalledWith({ file: file.buffer, key: uuid })
+    expect(fileStorage.upload).toHaveBeenCalledWith({ file: file.buffer, fileName: uuid })
     expect(fileStorage.upload).toHaveBeenCalledTimes(1)
   })
 
@@ -98,7 +98,7 @@ describe('ChangeProfilePicture', () => {
     const promise = sut({ id: 'any-id', file })
 
     promise.catch(() => {
-      expect(fileStorage.delete).toHaveBeenCalledWith({ key: uuid })
+      expect(fileStorage.delete).toHaveBeenCalledWith({ fileName: uuid })
       expect(fileStorage.delete).toHaveBeenCalledTimes(1)
     })
   })

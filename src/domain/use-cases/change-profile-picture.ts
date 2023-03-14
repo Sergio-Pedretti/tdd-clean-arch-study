@@ -21,7 +21,7 @@ export const setupChangeProfilePicture: Setup = (fileStorage, crypto, userProfil
   const data: { pictureUrl?: string, name?: string } = {}
   const key = crypto.uuid({ key: id })
   if (file !== undefined) {
-    data.pictureUrl = await fileStorage.upload({ file: file.buffer, key })
+    data.pictureUrl = await fileStorage.upload({ file: file.buffer, fileName: key })
   } else {
     data.name = (await userProfileRepo.load({ id }))?.name
   }
@@ -30,7 +30,7 @@ export const setupChangeProfilePicture: Setup = (fileStorage, crypto, userProfil
   try {
     await userProfileRepo.savePicture(userProfile)
   } catch (error) {
-    if (file !== undefined) await fileStorage.delete({ key })
+    if (file !== undefined) await fileStorage.delete({ fileName: key })
     throw error
   }
   return {
