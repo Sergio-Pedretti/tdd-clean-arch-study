@@ -34,10 +34,17 @@ describe('ChangeProfilePicture', () => {
     sut = setupChangeProfilePicture(fileStorage, crypto, userProfile)
   })
 
-  it('should call UploadFile with correct input', async () => {
-    await sut({ id: 'any-id', file })
+  it('should call UploadFile with correct input and extension', async () => {
+    await sut({ id: 'any-id', file: { buffer, mimeType: 'image/png' } })
 
-    expect(fileStorage.upload).toHaveBeenCalledWith({ file: file.buffer, fileName: uuid })
+    expect(fileStorage.upload).toHaveBeenCalledWith({ file: file.buffer, fileName: `${uuid}.png` })
+    expect(fileStorage.upload).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call UploadFile with correct input and extension', async () => {
+    await sut({ id: 'any-id', file: { buffer, mimeType: 'image/jpeg' } })
+
+    expect(fileStorage.upload).toHaveBeenCalledWith({ file: file.buffer, fileName: `${uuid}.jpeg` })
     expect(fileStorage.upload).toHaveBeenCalledTimes(1)
   })
 
