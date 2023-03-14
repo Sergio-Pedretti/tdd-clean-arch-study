@@ -5,7 +5,10 @@ import { UserProfile } from '@/domain/entities'
 
 type Input = {
   id: string
-  file?: Buffer
+  file?: {
+    buffer: Buffer
+    mimeType: string
+  }
 }
 type Output = {
   pictureUrl?: string
@@ -18,7 +21,7 @@ export const setupChangeProfilePicture: Setup = (fileStorage, crypto, userProfil
   const data: { pictureUrl?: string, name?: string } = {}
   const key = crypto.uuid({ key: id })
   if (file !== undefined) {
-    data.pictureUrl = await fileStorage.upload({ file, key })
+    data.pictureUrl = await fileStorage.upload({ file: file.buffer, key })
   } else {
     data.name = (await userProfileRepo.load({ id }))?.name
   }

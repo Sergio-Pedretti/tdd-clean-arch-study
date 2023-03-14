@@ -10,7 +10,9 @@ jest.mock('@/domain/entities/user-profile')
 
 describe('ChangeProfilePicture', () => {
   let uuid: string
-  let file: Buffer
+  let buffer: Buffer
+  let mimeType: string
+  let file: { buffer: Buffer, mimeType: string }
   let fileStorage: MockProxy<UploadFile & DeleteFile>
   let userProfile: MockProxy<SaveUserPicture & LoadUserProfile>
   let crypto: MockProxy<UUIDGenerator>
@@ -18,7 +20,9 @@ describe('ChangeProfilePicture', () => {
 
   beforeAll(() => {
     uuid = 'any-unique-id'
-    file = Buffer.from('any-buffer')
+    buffer = Buffer.from('any-buffer')
+    mimeType = 'image/png'
+    file = { buffer, mimeType }
     fileStorage = mock()
     fileStorage.upload.mockResolvedValue('any-url')
     userProfile = mock()
@@ -33,7 +37,7 @@ describe('ChangeProfilePicture', () => {
   it('should call UploadFile with correct input', async () => {
     await sut({ id: 'any-id', file })
 
-    expect(fileStorage.upload).toHaveBeenCalledWith({ file, key: uuid })
+    expect(fileStorage.upload).toHaveBeenCalledWith({ file: file.buffer, key: uuid })
     expect(fileStorage.upload).toHaveBeenCalledTimes(1)
   })
 
