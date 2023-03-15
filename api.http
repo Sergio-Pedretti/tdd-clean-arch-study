@@ -1,0 +1,6 @@
+POST http://localhost:8080/api/login/facebook
+content-type: application/json
+
+{
+    "token": "EAAHuxvdal4YBAAene4KOy8rjmSfToJsrXEev4jBzDgHf0qWAVW5kIclxm4MPtzDGomZCIRu0miqOZBHl9BIHr4h2UOlY7jXsSvSo34KiUwcPIzr9qxpgJvB9Qvbq66bGCgZA44K52Apbitbrx7ZBzPdppcrF1EKuGNSTQSXPosq6JHARyKZC6yQU3pIUoZAtlPYBZAOBoASXwotUxZBbHlk87vSPtYgtdZCSegzq34fAlNgIpjcjsE6ns"
+}

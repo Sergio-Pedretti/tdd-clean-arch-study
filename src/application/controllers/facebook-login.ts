@@ -18,7 +18,8 @@ export class FacebookLoginController extends Controller {
     try {
       const accessToken = await this.facebookAuth({ token })
       return ok(accessToken)
-    } catch {
+    } catch (error) {
+      console.log(error)
       return unauthorized()
     }
   }
