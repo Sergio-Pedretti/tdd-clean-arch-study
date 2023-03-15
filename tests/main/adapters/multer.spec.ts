@@ -81,7 +81,7 @@ describe('MulterAdapter', () => {
       anyLocals: 'any-locals',
       file: {
         buffer: req.file?.buffer,
-        mimetype: req.file?.mimetype
+        mimeType: req.file?.mimetype
       }
     })
   })

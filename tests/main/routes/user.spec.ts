@@ -28,14 +28,14 @@ describe('User Routes', () => {
   })
 
   describe('DELETE /users/picture', () => {
-    it('it should return 403 if no authorization header is present', async () => {
+    it('should return 403 if no authorization header is present', async () => {
       const { status } = await request(app)
         .delete('/api/users/picture')
 
       expect(status).toBe(403)
     })
 
-    it('it should return 200 with valid data', async () => {
+    it('should return 200 with valid data', async () => {
       const { id } = await pgUserRepo.save({ email: 'any-email', name: 'Sérgio pedretti' })
       const authorization = sign({ key: id }, env.jwtSecret)
 
@@ -49,11 +49,33 @@ describe('User Routes', () => {
   })
 
   describe('PUT /users/picture', () => {
-    it('it should return 403 if no authorization header is present', async () => {
+    const uploadSpy = jest.fn()
+
+    jest.mock('@/infra/upload/aws-s3-file-storage', () => ({
+      AwsS3FileStorage: jest.fn().mockReturnValue({
+        upload: uploadSpy
+      })
+    }))
+
+    it('should return 403 if no authorization header is present', async () => {
       const { status } = await request(app)
         .put('/api/users/picture')
 
       expect(status).toBe(403)
+    })
+
+    it('should return 200 with valid data', async () => {
+      uploadSpy.mockResolvedValueOnce('any-url')
+      const { id } = await pgUserRepo.save({ email: 'any-email', name: 'Sérgio pedretti' })
+      const authorization = sign({ key: id }, env.jwtSecret)
+
+      const { status, body } = await request(app)
+        .put('/api/users/picture')
+        .set({ authorization })
+        .attach('picture', Buffer.from('any-buffer'), { filename: 'any-name', contentType: 'image/png' })
+
+      expect(status).toBe(200)
+      expect(body).toEqual({ pictureUrl: 'any-url', initials: undefined })
     })
   })
 })
