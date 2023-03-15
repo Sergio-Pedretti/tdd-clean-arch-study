@@ -3,12 +3,15 @@ import { NextFunction, Request, RequestHandler, Response } from 'express'
 import { mocked } from 'ts-jest/utils'
 
 import multer from 'multer'
+import { ServerError } from '@/application/erros'
 
 jest.mock('multer')
 
 const adaptMulter: RequestHandler = (req, res, next) => {
   const upload = multer().single('picture')
-  upload(req, res, () => {})
+  upload(req, res, (error) => {
+    res.status(500).json({ error: new ServerError(error).message })
+  })
 }
 
 describe('MulterAdapter', () => {
@@ -23,7 +26,7 @@ describe('MulterAdapter', () => {
   let fakeMulter: jest.Mocked<typeof multer>
 
   beforeAll(() => {
-    uploadSpy = jest.fn()
+    uploadSpy = jest.fn().mockImplementation(() => {})
     singleSpy = jest.fn().mockImplementation(() => uploadSpy)
     multerSpy = jest.fn().mockImplementation(() => ({ single: singleSpy }))
 
@@ -47,5 +50,18 @@ describe('MulterAdapter', () => {
     expect(singleSpy).toHaveBeenCalledTimes(1)
     expect(uploadSpy).toHaveBeenCalledWith(req, res, expect.any(Function))
     expect(uploadSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('should return 500 if upload fails', () => {
+    const error = new Error('multer_error')
+    uploadSpy = jest.fn().mockImplementationOnce((req, res, next) => {
+      next(error)
+    })
+    sut(req, res, next)
+
+    expect(res.status).toHaveBeenCalledWith(500)
+    expect(res.status).toHaveBeenCalledTimes(1)
+    expect(res.json).toHaveBeenCalledWith({ error: new ServerError(error).message })
+    expect(res.json).toHaveBeenCalledTimes(1)
   })
 })
