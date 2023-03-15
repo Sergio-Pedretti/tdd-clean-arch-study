@@ -9,8 +9,13 @@ jest.mock('multer')
 
 const adaptMulter: RequestHandler = (req, res, next) => {
   const upload = multer().single('picture')
-  upload(req, res, (error) => {
-    res.status(500).json({ error: new ServerError(error).message })
+  upload(req, res, error => {
+    if (error !== undefined) {
+      return res.status(500).json({ error: new ServerError(error).message })
+    }
+    if (req.file !== undefined) {
+      req.locals = { ...req.locals, file: { buffer: req.file.buffer, mimetype: req.file.mimetype } }
+    }
   })
 }
 
@@ -26,18 +31,21 @@ describe('MulterAdapter', () => {
   let fakeMulter: jest.Mocked<typeof multer>
 
   beforeAll(() => {
-    uploadSpy = jest.fn().mockImplementation(() => {})
     singleSpy = jest.fn().mockImplementation(() => uploadSpy)
     multerSpy = jest.fn().mockImplementation(() => ({ single: singleSpy }))
 
-    req = getMockReq()
-    res = getMockRes({ locals: { anyLocals: 'any-locals' } }).res
+    res = getMockRes().res
     next = getMockRes().next
     fakeMulter = multer as jest.Mocked<typeof multer>
     mocked(fakeMulter).mockImplementation(multerSpy)
   })
 
   beforeEach(() => {
+    uploadSpy = jest.fn().mockImplementation((req, res, next) => {
+      req.file = { buffer: Buffer.from('any-buffer'), mimetype: 'any-type' }
+      next()
+    })
+    req = getMockReq({ locals: { anyLocals: 'any-locals' } })
     sut = adaptMulter
   })
 
@@ -73,6 +81,18 @@ describe('MulterAdapter', () => {
 
     sut(req, res, next)
 
-    expect(res.locals).toEqual({ anyLocals: 'any-locals' })
+    expect(req.locals).toEqual({ anyLocals: 'any-locals' })
+  })
+
+  it('should add file to req.locals', () => {
+    sut(req, res, next)
+
+    expect(req.locals).toEqual({
+      anyLocals: 'any-locals',
+      file: {
+        buffer: req.file?.buffer,
+        mimetype: req.file?.mimetype
+      }
+    })
   })
 })
