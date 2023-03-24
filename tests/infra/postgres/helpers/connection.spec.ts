@@ -23,6 +23,7 @@ describe('PgConnection', () => {
   let closeSpy: jest.Mock
   let startTransactionSpy: jest.Mock
   let releaseSpy: jest.Mock
+  let commitTransactionSpy: jest.Mock
 
   beforeAll(() => {
     hasSpy = jest.fn().mockReturnValue(true)
@@ -32,9 +33,11 @@ describe('PgConnection', () => {
     mocked(getConnectionManager).mockImplementation(getConnectionManagerSpy)
     startTransactionSpy = jest.fn()
     releaseSpy = jest.fn()
+    commitTransactionSpy = jest.fn()
     createQueryRunnerSpy = jest.fn().mockReturnValue({
       startTransaction: startTransactionSpy,
-      release: releaseSpy
+      release: releaseSpy,
+      commitTransaction: commitTransactionSpy
     })
     createConnectionSpy = jest.fn().mockResolvedValue({
       createQueryRunner: createQueryRunnerSpy
@@ -106,7 +109,7 @@ describe('PgConnection', () => {
   })
 
   it('should return ConnectionNotFoundError on openTransaction if there is no connection', async () => {
-    const promise = sut.disconnect()
+    const promise = sut.openTransaction()
 
     expect(startTransactionSpy).not.toHaveBeenCalled()
     await expect(promise).rejects.toThrow(new ConnectionNotFoundError())
@@ -114,7 +117,6 @@ describe('PgConnection', () => {
 
   it('should close a transaction', async () => {
     await sut.connect()
-    await sut.openTransaction()
     await sut.closeTransaction()
 
     expect(releaseSpy).toHaveBeenCalledWith()
@@ -124,9 +126,26 @@ describe('PgConnection', () => {
   })
 
   it('should return ConnectionNotFoundError on closeTransaction if there is no connection', async () => {
-    const promise = sut.disconnect()
+    const promise = sut.closeTransaction()
 
     expect(releaseSpy).not.toHaveBeenCalled()
+    await expect(promise).rejects.toThrow(new ConnectionNotFoundError())
+  })
+
+  it('should commit a transaction', async () => {
+    await sut.connect()
+    await sut.commit()
+
+    expect(commitTransactionSpy).toHaveBeenCalledWith()
+    expect(commitTransactionSpy).toHaveBeenCalledTimes(1)
+
+    await sut.disconnect()
+  })
+
+  it('should return ConnectionNotFoundError on commit if there is no connection', async () => {
+    const promise = sut.commit()
+
+    expect(commitTransactionSpy).not.toHaveBeenCalled()
     await expect(promise).rejects.toThrow(new ConnectionNotFoundError())
   })
 })
