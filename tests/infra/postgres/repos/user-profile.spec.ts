@@ -1,4 +1,4 @@
-import { PgUserProfileRepository } from '@/infra/postgres/repos'
+import { PgRepository, PgUserProfileRepository } from '@/infra/postgres/repos'
 import { PgUser } from '@/infra/postgres/entities'
 import { makeFakeDb } from '@/tests/infra/postgres/mocks'
 import { IBackup } from 'pg-mem'
@@ -22,6 +22,10 @@ describe('PgUserProfileRepository', () => {
 
   afterAll(async () => {
     await getConnection().close()
+  })
+
+  it('should extend PgRepository', async () => {
+    expect(sut).toBeInstanceOf(PgRepository)
   })
 
   describe('savePicture', () => {
